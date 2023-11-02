@@ -1,0 +1,3 @@
+[submodule "cc-alculus"]
+	path = cc-alculus
+	url = https://github.com/TheCalculus/cc-alculus
