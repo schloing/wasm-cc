@@ -24,7 +24,18 @@ Module.onRuntimeInitialized = async () => {
 function main(calc) {
     console.log("beginning c execution!");
 
-    const input = "int x = 0;";
+    const input = `
+        void function_call(int a, int b, int c);
+
+        int main() {
+            int x = 1;
+            int y = 2;
+
+            function_call(x, y, 3);
+
+            return 0;
+        }
+    `
 
     calc.init_cc();
     calc.WASMopenBuffer(input);

@@ -10,31 +10,9 @@
 #include "cc-alculus/include/parser.h"
 #include "cc-alculus/include/stdout.h"
 
-/* identical to main.c */
+#include "cc-alculus/include/main.h"
 
-Token*    token_sequence = NULL;
-size_t    sequence_size  = 10;
-size_t    sequence_pos   = 0;
-
-AST_NODE* AST            = NULL;
-size_t    AST_size       = 10;
-size_t    AST_position   = 0;
-
-FILE*     buffer         = NULL;
-char      active         = 0;
-uint8_t   row = 1, col   = 0;
-
-KVP keywords[] =
-{
-    { "int"    , TOK_INT    },
-    { "void"   , TOK_VOID   },
-    { "char"   , TOK_CHAR   },
-    { "if"     , TOK_IF     },
-    { "else"   , TOK_ELSE   },
-    { "return" , TOK_RETURN },
-};
-
-uint8_t keywords_size = sizeof(keywords) / sizeof(keywords[0]);
+INIT_CC();
 
 void freeTokens() {
     for (int i = 0; i < sequence_pos; i++)
@@ -53,17 +31,20 @@ void freeAST(AST_NODE* node) {
     free(node);
 }
 
-
-/* usage
- * init_cc();
- * WASMopenBuffer("some_c_code");
- * tokenize_source();
- * parse_source();
- */
-
 void WASMopenBuffer(char* source) {
+#ifdef __WCC_PRINTSRC__
+    printf("source: %s\n", source);
+#endif
+
+#ifndef __GNUC__
     buffer = fopen("content.tmp.c", "w");
+    if (buffer == NULL) perror("fopen\n");
     fputs(source, buffer);
+#else
+    buffer = fmemopen(source, strlen(source), "r");
+#endif
+
+    getc(buffer);
 }
 
 void init_cc() {
@@ -74,8 +55,15 @@ void init_cc() {
     AST            = (AST_NODE*)malloc(sizeof(AST_NODE) * AST_size);
 }
 
-void tokenize_source() { tokenize(); }
-void parse_source()    { parse();    }
+void tokenize_source() {
+    printf("beginning tokenization\n");
+    tokenize();
+}
+
+void parse_source() {
+    printf("beginning parsing\n");
+    parse();
+}
 
 void clean_cc() {
     freeTokens (/* token_sequence */);
